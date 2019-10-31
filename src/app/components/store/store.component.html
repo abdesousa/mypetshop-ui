@@ -4,7 +4,28 @@
         <h2>Loading...</h2>
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     </div>
+    
 
+    <div class="row" *ngIf="!loading">
+        <div class="col-md-12">
+            <div class="card ">
+                <div class="card-body ">
+
+                        <div class="row">
+                            <label class="col-sm-2 col-form-label">Select a user*</label>
+                            <div class="col-sm-10">                                    
+                                <mat-form-field class="example-full-width">
+                                    <mat-select [(ngModel)]="user_selected" name="user_selected">
+                                        <mat-option *ngFor="let user of users" [value]="user.userId">
+                                            {{user.userName}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>            
 
     <div class="row" *ngIf="!showForm && !loading">
         <div class="col-md-12">
@@ -12,15 +33,7 @@
                 <div class="card-header card-header-tabs card-header-primary">
                     <div class="nav-tabs-navigation">
                         <div class="nav-tabs-wrapper">
-                            <span class="nav-tabs-title">Product</span>
-                            <ul class="nav nav-tabs" data-tabs="tabs">
-                                <li class="nav-item">
-                                    <a class="nav-link" [routerLink]="" (click)="addProduct()">
-                                        <i class="material-icons">add</i>New
-                                        <div class="ripple-container"></div>
-                                    </a>
-                                </li>
-                            </ul>
+                            Product List        
                         </div>
                     </div>
                 </div>
@@ -31,24 +44,25 @@
                             width="100%" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>{{ dataTable.headerRow[2] }}</th>
-                                    <th>{{ dataTable.headerRow[1] }}</th>
+                                    
+
                                     <th>{{ dataTable.headerRow[0] }}</th>
+                                    <th>{{ dataTable.headerRow[1] }}</th>
+                                    <th>{{ dataTable.headerRow[2] }}</th>
                                     <th class="disabled-sorting text-right">{{ dataTable.headerRow[3] }}</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr *ngFor="let row of dataTable.dataRows">
-                                    <td><img src="{{row[3]}}" width="30" height="30" /></td>
+                                        <td><img src="{{row[3]}}" width="30" height="30" /></td>
+
                                     <td>{{row[1]}}</td>
                                     <td>{{row[2]}}</td>
                                     <td class="text-right">
-                                        <a class="btn btn-link btn-info btn-just-icon" (click)="editProduct(row)"><i
-                                                class="material-icons">edit</i></a>
-                                        <a class="btn btn-link btn-danger btn-just-icon remove"
-                                            (click)="deleteProduct(row[0])"><i class="material-icons">delete</i></a>
-                                    </td>
+                                        <a class="btn btn-link btn-info btn-just-icon" (click)="selectProduct(row)"><i
+                                                class="material-icons">shop</i></a>
+                                      </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -61,41 +75,40 @@
     <div class="row" *ngIf="showForm && !loading">
         <div class="col-md-12">
             <div class="card ">
-                <div class="card-header card-header-primary card-header-text">
-                    <div class="card-text">
-                        <h4 class="card-title">Product</h4>
-                    </div>
-                </div>
+
 
                 <div class="card-body ">
-                    <form method="get" action="/" class="form-horizontal">
 
                         <div class="row">
                             <label class="col-sm-2 col-form-label">Name*</label>
                             <div class="col-sm-10">
-                                <mat-form-field class="example-full-width">
-                                    <input matInput type="text" name="productName" required [(ngModel)]="productDTO.productName">
-                                </mat-form-field>
+                                {{ productDTO.productName }}
                             </div>
                         </div>
 
                         <div class="row">
                             <label class="col-sm-2 col-form-label">Value</label>
                             <div class="col-sm-10">
-                                <mat-form-field class="example-full-width">
-                                    <input matInput type="text" name="productValue" required [(ngModel)]="productDTO.productValue">
+                                <mat-form-field>
+                                    <input matInput type="text" name="productItemValue" required [(ngModel)]="itemDTO.productItemValue">
                                 </mat-form-field>
+                               
                             </div>
                         </div>
                         <div class="row">
+                                <label class="col-sm-2 col-form-label">Value</label>
+                                <div class="col-sm-10">
+                                    <mat-form-field>
+                                        <input matInput type="text" name="productItemQuantity" required [(ngModel)]="itemDTO.productItemQuantity">
+                                    </mat-form-field>                                   
+                                </div>
+                            </div>
+                        <div class="row">
                             <label class="col-sm-2 col-form-label">URL</label>
                             <div class="col-sm-10">
-                                <mat-form-field class="example-full-width">
-                                    <input matInput type="text" name="productUrl" required [(ngModel)]="productDTO.productUrl">
-                                </mat-form-field>
+                                    <img src="{{itemDTO.productItemUrl}}" width="90" height="70" />
                             </div>
                         </div>
-                    </form>
                 </div>
                 <div class="card-footer ">
                     <div class="row">
@@ -104,7 +117,7 @@
                                 (click)="cancel()">Cancel
                             </button>&nbsp;&nbsp;
                             <button mat-raised-button type="button" class="btn btn-fill btn-success"
-                                (click)="saveProduct(mode)">Save
+                                (click)="addToCart()">Add to Cart
                             </button>
                         </div>
                     </div>

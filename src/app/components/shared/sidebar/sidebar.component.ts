@@ -38,14 +38,21 @@ export const ROUTES: RouteInfo[] = [
         path: '/user',
         title: 'User',
         type: 'link',
-        icontype: 'apps',
+        icontype: 'account_circle',
         show: 'true'
     },
     {
         path: '/product',
         title: 'Product',
         type: 'link',
-        icontype: 'apps',
+        icontype: 'ballot',
+        show: 'true'
+    },
+    {
+        path: '/store',
+        title: 'Store',
+        type: 'link',
+        icontype: 'shop',
         show: 'true'
     },
 ];

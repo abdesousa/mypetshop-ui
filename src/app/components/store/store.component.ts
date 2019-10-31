@@ -6,6 +6,10 @@ import { ProductDTO } from '../../models/product.dto';
 import { AppConstants } from '../shared/constants/appconstants';
 
 import { windowWhen } from 'rxjs/operators';
+import { ItemDTO } from 'src/app/models/item.dto';
+import { UserDTO } from 'src/app/models/user.dto';
+import { UserService } from 'src/app/services/user.service';
+import { CartService } from 'src/app/services/cart.service';
 
 declare interface DataTable {
     headerRow: string[];
@@ -16,25 +20,32 @@ declare interface DataTable {
 declare const $: any;
 
 @Component({
-    selector: 'app-product',
-    templateUrl: './product.component.html'
+    selector: 'app-store',
+    templateUrl: './store.component.html'
 })
-export class ProductComponent implements OnInit {
+export class StoreComponent implements OnInit {
 
     dataTable: DataTable = {
-        headerRow: ['Image','Nome', 'Value',''],
+        headerRow: ['Image','Name', 'Price',''],
         dataRows: []
     };
 
+    users = [];
+    userDTO: UserDTO;
+    user_selected: number; 
     products = [];
     productDTO: ProductDTO;
+    itemDTO: ItemDTO;
     showForm = false;
     mode: string;
     has_error = false;
     error_message: string;
     loading:boolean;
 
-    constructor(public productService: ProductService,
+
+    constructor(public productService: ProductService, 
+        public userService: UserService,
+        public cartService: CartService,
         public utilService: Util,
         public chRef: ChangeDetectorRef,
         private appConstants: AppConstants) {
@@ -42,13 +53,26 @@ export class ProductComponent implements OnInit {
 
 
     ngOnInit() {
+        this.loading = true;
+
+        this.loadUsers();
         this.loadProducts();
         this.mode = this.appConstants.mode_update;
+
+        this.loading = false;
+
+    }
+    loadUsers() {
+        this.userService.findAll()
+            .subscribe(
+                (resp: any) => {
+                    this.users = resp;
+                }
+            );
+
     }
 
-
     loadProducts() {
-        this.loading = true;
         this.productService.findAll()
             .subscribe(
                 (resp: any) => {
@@ -68,7 +92,6 @@ export class ProductComponent implements OnInit {
                     $('#datatables').DataTable().destroy();
                     this.chRef.detectChanges();
                     this.createTable();
-                    this.loading = false;
 
                 }
             );
@@ -110,76 +133,36 @@ export class ProductComponent implements OnInit {
         this.createTable();
     }
 
-    addProduct() {
-        this.productDTO = new ProductDTO();
-
-        this.showForm = true;
-
-        this.mode = this.appConstants.mode_create;
-
-        $(document).scrollTop(0);
-    }
-
-    editProduct(data) {
+    selectProduct(data) {
 
         this.showForm = true;
 
         $(document).scrollTop(0);
 
         this.productDTO = this.products.find((item) => item.productId === data[0]);
-        this.mode = this.appConstants.mode_update;
-
-    }
-
-
-    deleteProduct(productId) {
-
+        this.itemDTO = new ItemDTO();
+        this.itemDTO.cartId = 0;
+        this.itemDTO.productId = this.productDTO.productId;
+        this.itemDTO.productItemValue = this.productDTO.productValue;
+        this.itemDTO.productItemQuantity = 0;
+        this.itemDTO.productItemUrl= this.productDTO.productUrl;
         
-        this.utilService.confirm('Product information', 'Delete the product?')
-            .then((result) => {
-                if (result.value) {
-                    this.productService.delete(productId)
-                        .subscribe(
-                            (resp: any) => {
-                                this.utilService.showNotification('top', 'right', 'success', 'Product Information deleted successfully!');
-                                this.loadProducts();
-                            }, (err) => {
-                                this.utilService.error('Product Information - Delete', err.message);
-                            }
-                        );
-                }
-            }
-        );
+        this.mode = this.appConstants.mode_create;
 
     }
 
-    saveProduct(mode: string) {
+    addToCart() {
 
-        if (mode === this.appConstants.mode_update) { // update
-
-            this.productService.update(this.productDTO)
-                .subscribe(
-                    (resp: any) => {
-                        this.utilService.showNotification('top', 'right', 'success', 'Product Information updated successfully!');
-                        this.closeForm();
-                        this.loadProducts();
-                    }, (err) => {
-                        this.utilService.error('Product Information - Update', err.message);
-                    }
-                );
-
-        } else {  // create
-            this.productService.create(this.productDTO)
-                .subscribe(
-                    (resp: any) => {
-                        this.utilService.showNotification('top', 'right', 'success', 'Product Information created successfully!');
-                        this.closeForm();
-                        this.loadProducts();
-                    }, (err) => {
-                        this.utilService.error('Product Information - Create', err.message);
-                    }
-                );
-        }
+        this.cartService.addToCart(this.itemDTO)
+            .subscribe(
+                (resp: any) => {
+                    this.utilService.showNotification('top', 'right', 'success', 'Item added to the cart successfully!');
+                    this.closeForm();
+                    this.loadProducts();
+                }, (err) => {
+                    this.utilService.error('Add To Cart', err.message);
+                }
+            );
 
     }
 
