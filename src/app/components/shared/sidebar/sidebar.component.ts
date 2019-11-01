@@ -55,6 +55,13 @@ export const ROUTES: RouteInfo[] = [
         icontype: 'shop',
         show: 'true'
     },
+    {
+        path: '/cart',
+        title: 'Cart',
+        type: 'link',
+        icontype: 'shopping_cart',
+        show: 'true'
+    },
 ];
 
 @Component({

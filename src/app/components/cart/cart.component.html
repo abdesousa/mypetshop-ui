@@ -13,7 +13,7 @@
                     <div class="card-header card-header-tabs card-header-primary">
                         <div class="nav-tabs-navigation">
                             <div class="nav-tabs-wrapper">
-                                User Selection
+                                My Shop Cart (User Selection)
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                 <div class="card-header card-header-tabs card-header-primary">
                     <div class="nav-tabs-navigation">
                         <div class="nav-tabs-wrapper">
-                            Product List
+                            My Shop Cart Items
                         </div>
                     </div>
                 </div>
@@ -67,19 +67,24 @@
                                     <th>{{ dataTable.headerRow[0] }}</th>
                                     <th>{{ dataTable.headerRow[1] }}</th>
                                     <th>{{ dataTable.headerRow[2] }}</th>
+                                    <th>{{ dataTable.headerRow[3] }}</th>
                                     <th class="disabled-sorting text-right">{{ dataTable.headerRow[3] }}</th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 <tr *ngFor="let row of dataTable.dataRows">
-                                    <td><img src="{{row[3]}}" width="30" height="30" /></td>
+                                    <td><img src="{{row[5]}}" width="30" height="30" /></td>
 
-                                    <td>{{row[1]}}</td>
+                                    <td>{{row[4]}}</td>
+                                    <td>{{row[3]}}</td>
                                     <td>{{row[2]}}</td>
+
                                     <td class="text-right">
-                                        <a class="btn btn-link btn-info btn-just-icon" (click)="selectProduct(row)"><i
-                                                class="material-icons">shop</i></a>
+                                        <a class="btn btn-link btn-info btn-just-icon" (click)="selectItem(row)"><i
+                                                class="material-icons">edit</i></a>
+                                        <a class="btn btn-link btn-danger btn-just-icon remove"
+                                        (click)="deleteItem(row)"><i class="material-icons">delete</i></a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -96,7 +101,7 @@
                     <div class="card-header card-header-tabs card-header-primary">
                             <div class="nav-tabs-navigation">
                                 <div class="nav-tabs-wrapper">
-                                    Product details
+                                    Select Item Details
                                 </div>
                             </div>
                         </div>
@@ -147,7 +152,7 @@
                                 (click)="cancel()">Cancel
                             </button>&nbsp;&nbsp;
                             <button mat-raised-button type="button" class="btn btn-fill btn-success"
-                                (click)="addToCart()">Add to Cart
+                                (click)="updateCart()">Update my cart
                             </button>
                         </div>
                     </div>

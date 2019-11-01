@@ -10,16 +10,16 @@ export class CartService {
     }
 
     getCartByUserId(userid:number) {
-        return this.api.get('cart/${userid}');
+        return this.api.get(`cart/${userid}`);
     }
 
     addToCart(itemDTO) {
-        return this.api.post(`/cart/item`, itemDTO);
+        return this.api.post(`cart/item`, itemDTO);
     }
 
 
     removeItemFromCart(itemDTO) {
-        return this.api.post(`/cart/item`,itemDTO);
+        return this.api.post(`cart/item`,itemDTO);
     }
 
 }

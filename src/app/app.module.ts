@@ -54,6 +54,7 @@ import {AppConstants} from './components/shared/constants/appconstants';
 import { UserComponent } from './components/user/user.component';
 import { ProductComponent } from './components/product/product.component';
 import { StoreComponent } from './components/store/store.component';
+import { CartComponent } from './components/cart/cart.component';
 
 
 @NgModule({
@@ -121,7 +122,8 @@ export class MaterialModule {
         DashboardComponent,
         UserComponent,
         ProductComponent,
-        StoreComponent
+        StoreComponent,
+        CartComponent
 
     ],
     bootstrap: [AppComponent]

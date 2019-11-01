@@ -4,6 +4,7 @@ export class ItemDTO {
     userId: number;
     productItemQuantity: number;
     productItemUrl: string;
-    productItemValue: number;
+    productItemName: string;
+    productItemValue: any;
 }
 

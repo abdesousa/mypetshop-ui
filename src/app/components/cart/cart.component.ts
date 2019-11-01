@@ -10,6 +10,7 @@ import { ItemDTO } from 'src/app/models/item.dto';
 import { UserDTO } from 'src/app/models/user.dto';
 import { UserService } from 'src/app/services/user.service';
 import { CartService } from 'src/app/services/cart.service';
+import { CartDTO } from 'src/app/models/cart.dto';
 
 declare interface DataTable {
     headerRow: string[];
@@ -20,13 +21,13 @@ declare interface DataTable {
 declare const $: any;
 
 @Component({
-    selector: 'app-store',
-    templateUrl: './store.component.html'
+    selector: 'app-cart',
+    templateUrl: './cart.component.html'
 })
-export class StoreComponent implements OnInit {
+export class CartComponent implements OnInit {
 
     dataTable: DataTable = {
-        headerRow: ['Image','Name', 'Price',''],
+        headerRow: ['Image','Name', 'Price','Quantity',''],
         dataRows: []
     };
 
@@ -34,9 +35,10 @@ export class StoreComponent implements OnInit {
     users = [];
     userDTO: UserDTO;
     user_selected: number; 
-    products = [];
-    productDTO: ProductDTO;
+    items = [];
     itemDTO: ItemDTO;
+    cartDTO: CartDTO;
+
     showForm = false;
     mode: string;
     has_error = false;
@@ -44,7 +46,7 @@ export class StoreComponent implements OnInit {
     loading:boolean;
 
 
-    constructor(public productService: ProductService, 
+    constructor(
         public userService: UserService,
         public cartService: CartService,
         public utilService: Util,
@@ -59,10 +61,10 @@ export class StoreComponent implements OnInit {
         this.loading = true;
 
         this.loadUsers();
-        this.loadProducts();
         this.mode = this.appConstants.mode_update;
-
         this.loading = false;
+        this.cartDTO = new CartDTO();
+        this.items = [];
 
     }
     loadUsers() {
@@ -75,20 +77,22 @@ export class StoreComponent implements OnInit {
 
     }
 
-    loadProducts() {
-        this.productService.findAll()
+    loadItems() {
+        this.cartService.getCartByUserId(this.user_selected)
             .subscribe(
                 (resp: any) => {
                     this.dataTable.dataRows = [];
-                    this.products = resp;
+                    this.items = resp.items;
 
-                    this.products.forEach(
-                        (productDTO) => {
+                    this.items.forEach(
+                        (itemDTO) => {
                             this.dataTable.dataRows.push([
-                                productDTO.productId,
-                                productDTO.productName,
-                                productDTO.productValue,
-                                productDTO.productUrl
+                                itemDTO.cartId,
+                                itemDTO.productId,
+                                itemDTO.productItemQuantity,
+                                itemDTO.productItemValue,
+                                itemDTO.productItemName,
+                                itemDTO.productItemUrl
                             ]);
                         });
 
@@ -140,44 +144,70 @@ export class StoreComponent implements OnInit {
     selectUser() {
 
         if (this.user_selected != null) {
-            this.has_user_selected = true;
+            this.loadItems();
+            this.has_user_selected = true;     
+
         } else {
             this.has_user_selected = false;
         }
-        
-
     }
 
-    selectProduct(data) {
+    selectItem(data) {
 
         this.showForm = true;
 
         $(document).scrollTop(0);
 
-        this.productDTO = this.products.find((item) => item.productId === data[0]);
-        this.itemDTO = new ItemDTO();
-        this.itemDTO.productId = this.productDTO.productId;
-        this.itemDTO.productItemValue = this.productDTO.productValue;
-        this.itemDTO.productItemQuantity = 0;
-        this.itemDTO.productItemName= this.productDTO.productName;
-        this.itemDTO.productItemUrl= this.productDTO.productUrl;
-        this.itemDTO.userId = this.user_selected;
-        
+        this.itemDTO = this.items.find((item) => item.cartId === data[0]);   
+        this.itemDTO.userId = this.user_selected;        
+     
         this.mode = this.appConstants.mode_create;
+
     }
 
-    addToCart() {
+    updateCart() {
 
         this.cartService.addToCart(this.itemDTO)
             .subscribe(
                 (resp: any) => {
-                    this.utilService.showNotification('top', 'right', 'success', 'Item added to the cart successfully!');
+                    this.utilService.showNotification('top', 'right', 'success', 'Item updated on my cart successfully!');
                     this.closeForm();
-                    this.loadProducts();
+                    this.loadItems();
                 }, (err) => {
-                    this.utilService.error('Add To Cart', err.message);
+                    this.utilService.error('Update My Cart', err.message);
                 }
             );
+
+    }
+
+    deleteCart(data) {
+
+        
+        this.utilService.confirm('My Shopping Cart', 'Delete item?')
+            .then((result) => {
+                if (result.value) {
+
+                    let itemDTO = new ItemDTO();
+                    itemDTO.cartId = data[0];
+                    itemDTO.userId = this.user_selected;
+                    itemDTO.productId = data[1];
+                    itemDTO.productItemQuantity = data[2];
+                    itemDTO.productItemValue = data[3];
+                    itemDTO.productItemName = data[4];
+                    itemDTO.productItemUrl = data[5];
+
+                    this.cartService.removeItemFromCart(itemDTO)
+                        .subscribe(
+                            (resp: any) => {
+                                this.utilService.showNotification('top', 'right', 'success', 'Item removed successfully!');
+                                this.loadItems();
+                            }, (err) => {
+                                this.utilService.error('My Cart Remove item', err.message);
+                            }
+                        );
+                }
+            }
+        );
 
     }
 
