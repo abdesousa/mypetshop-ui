@@ -18,8 +18,7 @@ I created this api to demonstrate my abilities as software developer with a simp
 * Security: I removed the basic authentication layer in order to accelerate the development.  
 * Angular 8: Following the requirements of this test.
 * CORS: I implemented a proxy to invoke backend side.
-
-
+* User experience: I followed a design from freelancer project that I have worked.
 
 ## Github repository
 
@@ -37,11 +36,18 @@ After install Angular 8 as described in the java point page (https://www.javatpo
 https://github.com/abdesousa/mypetshop-ui
 ```
 
-2- Install the dependencies of the project 
+2. Update the proxy.config.js with the back end api address.
 
 ```
-npm install
-```
+const proxy = [
+    {
+      context: '/api',
+      target: '<back end api address>',
+      pathRewrite: { '^/api': '' }
+    }
+  ];
+  module.exports = proxy;
+  ```
 
 3- Run the project.
 

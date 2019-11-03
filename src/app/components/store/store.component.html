@@ -100,6 +100,7 @@
                                 </div>
                             </div>
                         </div>
+                        <form name="form" method="post" (ngSubmit)="f.form.valid && addToCart()" #f="ngForm" novalidate>
 
                 <div class="card-body ">
 
@@ -146,12 +147,12 @@
                             <button mat-raised-button type="button" class="btn btn-fill btn-info"
                                 (click)="cancel()">Cancel
                             </button>&nbsp;&nbsp;
-                            <button mat-raised-button type="button" class="btn btn-fill btn-success"
-                                (click)="addToCart()">Add to Cart
-                            </button>
+                            <button class="btn btn-fill btn-success">Add to cart</button>
+
                         </div>
                     </div>
                 </div>
+                </form>
             </div>
         </div>
     </div>
